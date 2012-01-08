@@ -2,8 +2,10 @@
 
 class Image {
 
-	public $image;
-	public $image_type;
+	public $original_image; // GD resource
+	public $image; // GD resource
+	public $image_type; // Int
+	//public $background_color; // Array(R, G, B)
 
 	public function __construct($filename = null) {
 		$filename && $this->load($filename);
@@ -22,6 +24,8 @@ class Image {
 		else if ( $this->image_type == IMAGETYPE_PNG ) {
 			$this->image = imagecreatefrompng($filename);
 		}
+
+		$this->original_image = $this->image;
 	}
 
 	public function getWidth() {
@@ -45,8 +49,9 @@ class Image {
 	}
 
 	public function scale($scale) {
-		$width = $this->getWidth() * $scale/100;
-		$height = $this->getheight() * $scale/100;
+		$width = $this->getWidth() * $scale;
+		$height = $this->getheight() * $scale;
+
 		$this->resize($width, $height);
 	}
 
@@ -66,6 +71,15 @@ class Image {
 
 	public function ensureTransparency(&$new_image) {
 		if ( $this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG ) {
+			// set bg color
+			/*if ( $this->background_color && is_array($this->background_color) ) {
+				$args = $this->background_color;
+				array_unshift($args, $new_image);
+				$bgcolor = call_user_func_array('imagecolorallocate', $args);
+				imagefill($new_image, 0, 0, $bgcolor);
+			}*/
+
+			// fix transparency
 			$transparency = imagecolortransparent($new_image);
 			if ( $transparency >= 0 ) {
 				$trnprt_color = imagecolorsforindex($image, $transparency);
