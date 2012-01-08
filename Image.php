@@ -89,15 +89,17 @@ class Image {
 		}
 	}
 
-	public function save($filename, $image_type = IMAGETYPE_JPEG, $quality = 0, $permissions = null) {
-		$quality or $quality = 75;
+	public function save($filename, $image_type = IMAGETYPE_JPEG, $options = array()) {
+		// options
+		isset($options['quality']) or $options['quality'] = 75;
+		isset($options['chmod']) or $options['chmod'] = 0;
 
 		$saved = false;
 
 		$this->outputPrep($image_type);
 
 		if ( $image_type == IMAGETYPE_JPEG ) {
-			$saved = imagejpeg($this->image, $filename, $quality);
+			$saved = imagejpeg($this->image, $filename, $options['quality']);
 		}
 		else if ( $image_type == IMAGETYPE_GIF ) {
 			$saved = imagegif($this->image, $filename);
@@ -107,20 +109,23 @@ class Image {
 		}
 
 		if ( $saved ) {
-			if ( $permissions != null ) {
-				chmod($filename, $permissions);
+			if ( $options['chmod'] ) {
+				chmod($filename, $options['chmod']);
 			}
 		}
 
 		return $saved;
 	}
 
-	public function output($image_type = IMAGETYPE_JPEG) {
+	public function output($image_type = IMAGETYPE_JPEG, $options = array()) {
+		// options
+		isset($options['quality']) or $options['quality'] = 75;
+
 		$this->outputPrep($image_type);
 
 		if ( $image_type == IMAGETYPE_JPEG ) {
 			header('Content-type: image/jpeg');
-			imagejpeg($this->image);
+			imagejpeg($this->image, null, $options['quality']);
 		}
 		else if ( $image_type == IMAGETYPE_GIF ) {
 			header('Content-type: image/gif');
