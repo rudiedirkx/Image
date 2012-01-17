@@ -69,6 +69,15 @@ class Image {
 		$this->image = $new_image;
 	}
 
+	public function max($width, $height) {
+		$targetScale = $width / $height;
+		$sourceScale = $this->getWidth() / $this->getHeight();
+
+		$scale = $sourceScale > $targetScale ? $width / $this->getWidth() : $height / $this->getHeight();
+
+		return $this->scale($scale);
+	}
+
 	public function ensureTransparency(&$new_image) {
 		if ( $this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG ) {
 			// set bg color
