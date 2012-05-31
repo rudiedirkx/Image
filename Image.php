@@ -75,7 +75,7 @@ class Image {
 
 		$scale = $sourceScale > $targetScale ? $width / $this->getWidth() : $height / $this->getHeight();
 
-		return $this->scale($scale);
+		return $scale >= 1.0 || $this->scale($scale);
 	}
 
 	public function ensureTransparency(&$new_image) {
